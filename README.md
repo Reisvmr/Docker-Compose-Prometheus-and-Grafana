@@ -43,7 +43,8 @@ docker-compose up -d
 
 ## Setup Grafana
 
-Navigate to `http://<host-ip>:3000` and login with user ***admin*** password ***admin***. You can change the credentials in the compose file or by supplying the `ADMIN_USER` and `ADMIN_PASSWORD` environment variables via .env file on compose up. The config file can be added directly in grafana part like this
+Navegue para `http: // <host-ip>: 3000` e faça login com o usuário *** admin *** senha *** admin ***. Você pode alterar as credenciais no arquivo de composição ou fornecendo as variáveis ​​de ambiente `ADMIN_USER` e` ADMIN_PASSWORD` via arquivo .env na composição. O arquivo de configuração pode ser adicionado diretamente na parte grafana assim
+
 ```
 grafana:
   image: grafana/grafana:5.2.4
@@ -51,18 +52,18 @@ grafana:
     - config
 
 ```
-and the config file format should have this content
+e o formato do arquivo de configuração deve ter este conteúdo
 ```
 GF_SECURITY_ADMIN_USER=admin
 GF_SECURITY_ADMIN_PASSWORD=changeme
 GF_USERS_ALLOW_SIGN_UP=false
 ```
-If you want to change the password, you have to remove this entry, otherwise the change will not take effect
+Se você quiser alterar a senha, você deve remover esta entrada, caso contrário, a alteração não terá efeito
 ```
 - grafana_data:/var/lib/grafana
 ```
 
-Grafana is preconfigured with dashboards and Prometheus as the default data source:
+Grafana é pré-configurado com painéis e Prometheus como fonte de dados padrão:
 
 * Name: Prometheus
 * Type: Prometheus
@@ -73,42 +74,41 @@ Grafana is preconfigured with dashboards and Prometheus as the default data sour
 
 ![Host](https://raw.githubusercontent.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana/master/screens/Grafana_Docker_Host.png)
 
-The Docker Host Dashboard shows key metrics for monitoring the resource usage of your server:
+O Docker Host Dashboard mostra as principais métricas para monitorar o uso de recursos do seu servidor:
 
-* Server uptime, CPU idle percent, number of CPU cores, available memory, swap and storage
-* System load average graph, running and blocked by IO processes graph, interrupts graph
-* CPU usage graph by mode (guest, idle, iowait, irq, nice, softirq, steal, system, user)
-* Memory usage graph by distribution (used, free, buffers, cached)
-* IO usage graph (read Bps, read Bps and IO time)
-* Network usage graph by device (inbound Bps, Outbound Bps)
-* Swap usage and activity graphs
+* Tempo de atividade do servidor, porcentagem de ociosidade da CPU, número de núcleos da CPU, memória disponível, troca e armazenamento
+* Gráfico de média de carga do sistema, rodando e bloqueado por gráfico de processos de IO, gráfico de interrupções
+* Gráfico de uso da CPU por modo (convidado, inativo, iowait, irq, nice, softirq, roubar, sistema, usuário)
+* Gráfico de uso de memória por distribuição (usado, livre, buffers, em cache)
+* Gráfico de uso de IO (leia Bps, leia Bps e tempo IO)
+* Gráfico de uso da rede por dispositivo (Bps de entrada, Bps de saída)
+* Trocar gráficos de uso e atividade
 
-For storage and particularly Free Storage graph, you have to specify the fstype in grafana graph request.
-You can find it in `grafana/dashboards/docker_host.json`, at line 480 :
+Para armazenamento e particularmente gráfico de armazenamento gratuito, você deve especificar o fstype na solicitação de gráfico grafana.
+Você pode encontrá-lo em `grafana/dashboards/docker_host.json`, na linha 480:
 
       "expr": "sum(node_filesystem_free_bytes{fstype=\"btrfs\"})",
 
-I work on BTRFS, so i need to change `aufs` to `btrfs`.
+trabalhar em BTRFS, então eu preciso mudar `aufs` para` btrfs`.
 
-You can find right value for your system in Prometheus `http://<host-ip>:9090` launching this request :
+Você pode encontrar o valor correto para o seu sistema no Prometheus `http: // <host-ip>: 9090` iniciando esta solicitação:
 
       node_filesystem_free_bytes
-
 ***Docker Containers Dashboard***
 
 ![Containers](https://raw.githubusercontent.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana/master/screens/Grafana_Docker_Containers.png)
 
-The Docker Containers Dashboard shows key metrics for monitoring running containers:
+O Docker Containers Dashboard mostra as principais métricas para monitorar contêineres em execução:
 
-* Total containers CPU load, memory and storage usage
-* Running containers graph, system load graph, IO usage graph
-* Container CPU usage graph
-* Container memory usage graph
-* Container cached memory usage graph
-* Container network inbound usage graph
-* Container network outbound usage graph
+* Total de carga de CPU de contêineres, uso de memória e armazenamento
+* Execução de gráfico de contêineres, gráfico de carga do sistema, gráfico de uso de IO
+* Gráfico de uso da CPU do contêiner
+* Gráfico de uso de memória do contêiner
+* Gráfico de uso de memória em cache do contêiner
+* Gráfico de uso de entrada da rede de contêineres
+* Gráfico de uso de saída da rede de contêiner
 
-Note that this dashboard doesn't show the containers that are part of the monitoring stack.
+Observe que este painel não mostra os contêineres que fazem parte da pilha de monitoramento.
 
 ***Monitor Services Dashboard***
 
@@ -116,26 +116,27 @@ Note that this dashboard doesn't show the containers that are part of the monito
 ![Monitor Services](https://raw.githubusercontent.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana/master/screens/Grafana_Prometheus2.png)
 ![Monitor Services](https://raw.githubusercontent.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana/master/screens/Grafana_Prometheus3.png)
 
-The Monitor Services Dashboard shows key metrics for monitoring the containers that make up the monitoring stack:
+O Monitor Services Dashboard mostra as principais métricas para monitorar os contêineres que compõem a pilha de monitoramento:
 
-* Prometheus container uptime, monitoring stack total memory usage, Prometheus local storage memory chunks and series
-* Container CPU usage graph
-* Container memory usage graph
-* Prometheus chunks to persist and persistence urgency graphs
-* Prometheus chunks ops and checkpoint duration graphs
-* Prometheus samples ingested rate, target scrapes and scrape duration graphs
-* Prometheus HTTP requests graph
-* Prometheus alerts graph
-
+* Tempo de atividade do contêiner do Prometheus, monitoramento do uso da memória total da pilha, blocos e séries de memória de armazenamento local do Prometheus
+* Gráfico de uso da CPU do contêiner
+* Gráfico de uso de memória do contêiner
+* Pedaços de Prometheus para persistir e gráficos de urgência de persistência
+* Prometheus agrupa operações e gráficos de duração de pontos de verificação
+* Taxa de ingestão de amostras de Prometheus, raspagens de destino e gráficos de duração de raspagem
+* Gráfico de solicitações HTTP do Prometheus
+* Gráfico de alertas do Prometheus
 ## Define alerts
 
-Three alert groups have been setup within the [alert.rules](https://github.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana/blob/master/prometheus/alert.rules) configuration file:
+Três grupos de alerta foram configurados dentro do [alert.rules](https://github.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana/blob/master/prometheus/alert.rules) 
+
+Arquivo de configuração:
 
 * Monitoring services alerts [targets](https://github.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana/blob/master/prometheus/alert.rules#L2-L11)
 * Docker Host alerts [host](https://github.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana/blob/master/prometheus/alert.rules#L13-L40)
 * Docker Containers alerts [containers](https://github.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana/blob/master/prometheus/alert.rules#L42-L69)
 
-You can modify the alert rules and reload them by making a HTTP POST call to Prometheus:
+Você pode modificar as regras de alerta e recarregá-las fazendo uma chamada HTTP POST para Prometheus:
 
 ```
 curl -X POST http://admin:admin@<host-ip>:9090/-/reload
@@ -143,7 +144,7 @@ curl -X POST http://admin:admin@<host-ip>:9090/-/reload
 
 ***Monitoring services alerts***
 
-Trigger an alert if any of the monitoring targets (node-exporter and cAdvisor) are down for more than 30 seconds:
+Acione um alerta se algum dos alvos de monitoramento (node-exporter e cAdvisor) ficar inativo por mais de 30 segundos:
 
 ```yaml
 - alert: monitor_service_down
@@ -158,7 +159,7 @@ Trigger an alert if any of the monitoring targets (node-exporter and cAdvisor) a
 
 ***Docker Host alerts***
 
-Trigger an alert if the Docker host CPU is under high load for more than 30 seconds:
+Acione um alerta se a CPU do host Docker estiver sob alta carga por mais de 30 segundos:
 
 ```yaml
 - alert: high_cpu_load
@@ -171,9 +172,9 @@ Trigger an alert if the Docker host CPU is under high load for more than 30 seco
       description: "Docker host is under high load, the avg load 1m is at {{ $value}}. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
 ```
 
-Modify the load threshold based on your CPU cores.
+Modifique o limite de carga com base em seus núcleos de CPU.
 
-Trigger an alert if the Docker host memory is almost full:
+Acione um alerta se a memória do host Docker estiver quase cheia:
 
 ```yaml
 - alert: high_memory_load
@@ -186,7 +187,7 @@ Trigger an alert if the Docker host memory is almost full:
       description: "Docker host memory usage is {{ humanize $value}}%. Reported by instance {{ $labels.instance }} of job {{ $labels.job }}."
 ```
 
-Trigger an alert if the Docker host storage is almost full:
+Acione um alerta se o armazenamento do host Docker estiver quase cheio:
 
 ```yaml
 - alert: high_storage_load
@@ -201,7 +202,7 @@ Trigger an alert if the Docker host storage is almost full:
 
 ***Docker Containers alerts***
 
-Trigger an alert if a container is down for more than 30 seconds:
+Acione um alerta se um contêiner ficar inativo por mais de 30 segundos:
 
 ```yaml
 - alert: jenkins_down
@@ -214,7 +215,7 @@ Trigger an alert if a container is down for more than 30 seconds:
       description: "Jenkins container is down for more than 30 seconds."
 ```
 
-Trigger an alert if a container is using more than 10% of total CPU cores for more than 30 seconds:
+Acione um alerta se um contêiner estiver usando mais de 10% do total de núcleos de CPU por mais de 30 segundos:
 
 ```yaml
 - alert: jenkins_high_cpu
@@ -227,7 +228,7 @@ Trigger an alert if a container is using more than 10% of total CPU cores for mo
       description: "Jenkins CPU usage is {{ humanize $value}}%."
 ```
 
-Trigger an alert if a container is using more than 1.2GB of RAM for more than 30 seconds:
+Acione um alerta se um contêiner estiver usando mais de 1,2 GB de RAM por mais de 30 segundos:
 
 ```yaml
 - alert: jenkins_high_memory
@@ -242,18 +243,18 @@ Trigger an alert if a container is using more than 1.2GB of RAM for more than 30
 
 ## Setup alerting
 
-The AlertManager service is responsible for handling alerts sent by Prometheus server.
-AlertManager can send notifications via email, Pushover, Slack, HipChat or any other system that exposes a webhook interface.
-A complete list of integrations can be found [here](https://prometheus.io/docs/alerting/configuration).
+O serviço AlertManager é responsável pelo tratamento dos alertas enviados pelo servidor Prometheus.
+O AlertManager pode enviar notificações por e-mail, Pushover, Slack, HipChat ou qualquer outro sistema que exponha uma interface de webhook.
+Uma lista completa de integrações pode ser encontrada[here](https://prometheus.io/docs/alerting/configuration).
 
-You can view and silence notifications by accessing `http://<host-ip>:9093`.
+Você pode ver e silenciar notificações acessando `http://<host-ip>:9093`.
 
-The notification receivers can be configured in [alertmanager/config.yml](https://github.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana/blob/master/alertmanager/config.yml) file.
+Os receptores de notificação podem ser configurados em [alertmanager/config.yml](https://github.com/Einsteinish/Docker-Compose-Prometheus-and-Grafana/blob/master/alertmanager/config.yml) file.
 
-To receive alerts via Slack you need to make a custom integration by choose ***incoming web hooks*** in your Slack team app page.
-You can find more details on setting up Slack integration [here](http://www.robustperception.io/using-slack-with-the-alertmanager/).
+Para receber alertas via Slack, você precisa fazer uma integração personalizada, escolhendo *** entrantes web hooks *** na página do aplicativo de equipe do Slack.
+Você pode encontrar mais detalhes sobre como configurar a integração com o Slack [here](http://www.robustperception.io/using-slack-with-the-alertmanager/).
 
-Copy the Slack Webhook URL into the ***api_url*** field and specify a Slack ***channel***.
+Copie o URL do Slack Webhook no campo *** api_url *** e especifique um canal *** do Slack.
 
 ```yaml
 route:
@@ -279,26 +280,27 @@ To push data, simply execute:
 
     echo "some_metric 3.14" | curl --data-binary @- http://user:password@localhost:9091/metrics/job/some_job
 
-Please replace the `user:password` part with your user and password set in the initial configuration (default: `admin:admin`).
+Substitua a parte `user:password` pelo seu usuário e senha definidos na configuração inicial (padrão:`admin:admin`).
 
 ## Updating Grafana to v5.2.2
 
-[In Grafana versions >= 5.1 the id of the grafana user has been changed](http://docs.grafana.org/installation/docker/#migration-from-a-previous-version-of-the-docker-container-to-5-1-or-later). Unfortunately this means that files created prior to 5.1 won’t have the correct permissions for later versions.
+[Nas versões Grafana> = 5.1 o id do usuário grafana foi alterado](http://docs.grafana.org/installation/docker/#migration-from-a-previous-version-of-the-docker-container-to-5-1-or-later).Infelizmente, isso significa que os arquivos criados antes do 5.1 não terão as permissões corretas para as versões posteriores.
 
 | Version |   User  | User ID |
 |:-------:|:-------:|:-------:|
 |  < 5.1  | grafana |   104   |
 |  \>= 5.1 | grafana |   472   |
 
-There are two possible solutions to this problem.
-- Change ownership from 104 to 472
-- Start the upgraded container as user 104
+Existem duas soluções possíveis para este problema.
+- Alterar propriedade de 104 para 472
+- Inicie o contêiner atualizado como usuário 104
 
 ##### Specifying a user in docker-compose.yml
 
-To change ownership of the files run your grafana container as root and modify the permissions.
 
-First perform a `docker-compose down` then modify your docker-compose.yml to include the `user: root` option:
+Para alterar a propriedade dos arquivos, execute o seu container grafana como root e modifique as permissões.
+
+Primeiro execute um `docker-compose down` e então modifique seu docker-compose.yml para incluir a opção` user:root`:
 
 ```
   grafana:
@@ -324,19 +326,18 @@ First perform a `docker-compose down` then modify your docker-compose.yml to inc
       org.label-schema.group: "monitoring"
 ```
 
-Perform a `docker-compose up -d` and then issue the following commands:
+Execute um `docker-compose up -d` e emita os seguintes comandos:
 
 ```
 docker exec -it --user root grafana bash
-
-# in the container you just started:
+# no contêiner que você acabou de iniciar:
 chown -R root:root /etc/grafana && \
 chmod -R a+r /etc/grafana && \
 chown -R grafana:grafana /var/lib/grafana && \
 chown -R grafana:grafana /usr/share/grafana
 ```
 
-To run the grafana container as `user: 104` change your `docker-compose.yml` like such:
+Para executar o contêiner grafana como `user:104`, altere seu` docker-compose.yml` assim:
 
 ```
   grafana:
